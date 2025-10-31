@@ -63,69 +63,6 @@ def _xls_bytes_from_workbook(wb: Workbook) -> bytes:
     return bio.getvalue()
 
 
-@app.get("/template/amateur")
-def template_amateur():
-    """
-    Leeg sjabloon voor DL amateurvoetbal tool.
-    Kolommen in één sheet:
-      Thuisclub | Uitclub | ThuisDoelpunten | UitDoelpunten | RustThuis | RustUit | Doelpuntenmakers
-    """
-    wb = Workbook()
-    ws = wb.active
-    ws.title = "Amateurvoetbal"
-    ws.append(
-        [
-            "Thuisclub",
-            "Uitclub",
-            "ThuisDoelpunten",
-            "UitDoelpunten",
-            "RustThuis",
-            "RustUit",
-            "Doelpuntenmakers",
-        ]
-    )
-    data = _xls_bytes_from_workbook(wb)
-    return send_file(
-        io.BytesIO(data),
-        mimetype="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-        as_attachment=True,
-        download_name="DL_amateurvoetbal_invoerdocument.xlsx",
-    )
-
-
-@app.get("/template/regiosport")
-def template_regiosport():
-    """
-    Leeg sjabloon voor DL regiosport tool.
-
-    Sheet 1: 'Sporten met uitslagregel'
-      Kolommen: Label | Waarde
-      Gebruik o.a.: SPORT, EVENEMENT, UITSLAGREGEL 1..N. Lege rij = nieuw blok.
-
-    Sheet 2: 'Sporten met stand'
-      Kolommen: Label | Thuis | HS | Uit | AS
-      Optionele kopregel (Label leeg) kan gebruikt worden voor kolomtitels.
-      'STAND' in Label sluit een blok af en plaatst de standtekst.
-    """
-    wb = Workbook()
-
-    # Sheet 1
-    ws1 = wb.active
-    ws1.title = "Sporten met uitslagregel"
-    ws1.append(["Label", "Waarde"])
-    # (Voorbeeldregels eventueel later toevoegen)
-
-    # Sheet 2
-    ws2 = wb.create_sheet("Sporten met stand")
-    ws2.append(["Label", "Thuis", "HS", "Uit", "AS"])
-
-    data = _xls_bytes_from_workbook(wb)
-    return send_file(
-        io.BytesIO(data),
-        mimetype="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-        as_attachment=True,
-        download_name="DL_regiosport_invoerdocument.xlsx",
-    )
 
 
 # -----------------------------
