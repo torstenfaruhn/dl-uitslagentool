@@ -1,10 +1,14 @@
-
+# converter_regiosport.py — server-veilige versie
 import io
 import re
 import unicodedata
 import pandas as pd
+
+
 def _strip_accents(s: str) -> str:
     return "".join(c for c in unicodedata.normalize("NFKD", s) if not unicodedata.combining(c))
+
+
 def _nl_sort_key(sport: str):
     s = (sport or "").strip()
     if not s:
@@ -13,13 +17,17 @@ def _nl_sort_key(sport: str):
     if s_norm.startswith("ij"):
         s_norm = "y" + s_norm[2:]
     return (False, s_norm)
+
+
 def convert_sheet1_blocks(df):
-    import re
+    """Parse 'Sporten met uitslagregel' naar blokken met keys: sport, render_lines(list).
+       Neemt dynamisch alle 'UITSLAGREGEL N' mee (N = 1..∞)."""
     label_col = df.columns[0]
     value_col = df.columns[1]
     blocks = []
     current = {"SPORT": None, "EVENEMENT": None, "UITSLAGREGELS": []}
     uireg = re.compile(r"^UITSLAGREGEL\s*(\d+)$", re.IGNORECASE)
+
     def flush():
         nonlocal current
         if current["SPORT"] or current["EVENEMENT"] or current["UITSLAGREGELS"]:
@@ -33,13 +41,16 @@ def convert_sheet1_blocks(df):
                     lines.append(f"<howto_facts>{txt}</howto_facts><EP>")
             blocks.append({"sport": (current.get("SPORT") or "").strip(), "render_lines": lines})
         current = {"SPORT": None, "EVENEMENT": None, "UITSLAGREGELS": []}
+
     for _, row in df.iterrows():
         label = (str(row.get(label_col)).strip() if pd.notna(row.get(label_col)) else "")
         value = (str(row.get(value_col)).strip() if pd.notna(row.get(value_col)) else "")
+
         if not label and not value:
             flush(); continue
         if label.upper().startswith("INVOERVELD"):
             flush(); continue
+
         lab_up = label.upper()
         if lab_up == "SPORT":
             if value: current["SPORT"] = value
@@ -49,7 +60,10 @@ def convert_sheet1_blocks(df):
             if value: current["UITSLAGREGELS"].append(value)
     flush()
     return blocks
+
+
 def iter_sheet2_blocks(df):
+    """Yield blokken uit 'Sporten met stand' met: sport, evenement, rows, stand."""
     cols = list(df.columns)
     a, b, c, d, e = cols[0], cols[1], cols[2], cols[3], cols[4]
     i, n = 0, len(df)
@@ -62,6 +76,7 @@ def iter_sheet2_blocks(df):
             if i < n and str(df.at[i, a]).strip() == "EVENEMENT":
                 evenement = str(df.at[i, b]).strip() if pd.notna(df.at[i, b]) else ""
                 i += 1
+            # Header overslaan
             if i < n and pd.isna(df.at[i, a]) and all(pd.notna(df.at[i, col]) for col in [b, c, d, e]):
                 i += 1
             rows = []
@@ -84,6 +99,8 @@ def iter_sheet2_blocks(df):
             yield {"sport": sport, "evenement": evenement, "rows": rows, "stand": stand_text}
         else:
             i += 1
+
+
 def render_table_block(block):
     lines = []
     lines.append(f"<subhead_lead>{block['sport']}</subhead_lead><EP>")
@@ -109,6 +126,8 @@ def render_table_block(block):
     if block.get("stand"):
         lines.append(f"<howto_facts>{block['stand']}</howto_facts><EP>")
     return lines
+
+
 def to_render_blocks(sheet1_df, sheet2_df):
     blocks_s1 = convert_sheet1_blocks(sheet1_df)
     blocks_s2 = []
@@ -118,6 +137,8 @@ def to_render_blocks(sheet1_df, sheet2_df):
         blocks_s2.append({"sport": b['sport'], "render_lines": render_table_block(b)})
     all_blocks = blocks_s1 + blocks_s2
     return sorted(all_blocks, key=lambda bl: _nl_sort_key(bl.get("sport")))
+
+
 def suppress_redundant_sportheads(blocks):
     out = []
     last_sport_norm = None
@@ -133,20 +154,24 @@ def suppress_redundant_sportheads(blocks):
             last_sport_norm = sport_norm
         out.append({"sport": bl.get("sport",""), "render_lines": lines})
     return out
+
+
 def excel_to_txt_regiosport(file_bytes: bytes) -> str:
     buf = io.BytesIO(file_bytes)
     xls = pd.ExcelFile(buf, engine="openpyxl")
     sheet1 = pd.read_excel(xls, sheet_name=0, dtype=str)
     sheet2 = pd.read_excel(xls, sheet_name=1, dtype=str)
+
     blocks = to_render_blocks(sheet1, sheet2)
     blocks = suppress_redundant_sportheads(blocks)
+
     lines = ["<body>"]
     for bl in blocks:
         lines += bl["render_lines"]
     lines.append("</body>")
-    output_text = "
-".join(lines)
-    import re as _re
-    output_text = _re.sub(r'</howto_facts><EP>\s*<subhead>', r'</howto_facts><EP,1>
-<subhead>', output_text)
+    output_text = "\n".join(lines)
+
+    # Nabehandeling: <howto_facts> gevolgd door <subhead> krijgt EP,1
+    output_text = re.sub(r'</howto_facts><EP>\s*<subhead>', r'</howto_facts><EP,1>\n<subhead>', output_text)
+
     return output_text
