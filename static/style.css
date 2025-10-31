@@ -3,9 +3,12 @@
   --bg:#f7f8fb; --fg:#0b0d12; --muted:#69707d;
   --card:#ffffff; --brand:#1e88e5; --brand-dark:#176fbc; --outline:#d6dbe6;
   --ok:#2e7d32; --ok-dark:#236328;
+
+  --outline-btn:#cfd6e3;          /* lichtere grijstint voor outline-knoppen (light) */
   --hero-pad:16px;                 /* marge voor logo boven + teksten onder */
   --subtitle-size:1.05rem;         /* tevens de gap tussen de twee regels */
   --btn-width: 220px;              /* vaste breedte voor knoppen */
+  --btn-font: .95rem;              /* uniforme tekstgrootte in knoppen */
 }
 
 /* ---------- donkere modus (tijdgestuurd via .dark) ---------- */
@@ -13,6 +16,9 @@ html.dark{
   --bg:#0f131a; --fg:#e9eef8; --muted:#a8b1c2;
   --card:#151b24; --brand:#5aa9ff; --brand-dark:#4693e6; --outline:#283140;
   --ok:#3dbb58; --ok-dark:#2f9a47;
+
+  /* in dark mode een duidelijk lichtere rand voor outline-knoppen */
+  --outline-btn:#3e4a60;
 }
 
 *{box-sizing:border-box}
@@ -80,22 +86,41 @@ html,body{
   padding:.65rem 1rem; border-radius:12px; font-weight:600; cursor:pointer; transition:.15s ease;
   display:inline-flex; align-items:center; gap:.5rem; text-decoration:none; justify-content:center;
   min-width:var(--btn-width);
+  font-size:var(--btn-font);            /* uniforme tekstgrootte */
+  line-height:1.1;
 }
 .btn:hover{background:var(--brand-dark)}
 .btn:active{transform:translateY(1px)}
-.btn-outline{background:transparent; border-color:var(--outline); color:var(--fg)}
-.btn-outline:hover{border-color:var(--brand); color:var(--brand); background:rgba(30,136,229,.08)}
+.btn-outline{
+  background:transparent;
+  border-color:var(--outline-btn);     /* zichtbaar in zowel light/dark */
+  color:var(--fg);
+}
+.btn-outline:hover{
+  border-color:var(--brand);
+  color:var(--brand);
+  background:rgba(30,136,229,.08);
+}
 
 /* ---------- UPLOAD ---------- */
-.upload{ display:flex; gap:.9rem; flex-wrap:wrap; align-items:center; }
+.upload{
+  display:flex;
+  gap:.9rem;
+  flex-wrap:wrap;
+  align-items:center;
+  justify-content:center;              /* << alle bovenste knoppen centreren */
+}
 
 /* ---------- 'Bestand kiezen'-knop ---------- */
 .file{
   position:relative; display:inline-flex; align-items:center; gap:.6rem;
   border:1px solid var(--outline); border-radius:12px; padding:.6rem 1rem;
   background:#fff; cursor:pointer; transition:.15s ease; color:#000; /* zwart bij wit */
+  min-width:var(--btn-width);
+  font-size:var(--btn-font);            /* zelfde tekstgrootte als andere knoppen */
+  line-height:1.1;
 }
-html.dark .file{ color:#000; } /* ook zwart in dark mode bij witte knop */
+html.dark .file{ color:#000; }         /* ook zwart in dark mode bij witte knop */
 .file:hover{border-color:var(--brand)}
 .file input[type=file]{ position:absolute; inset:0; opacity:0; cursor:pointer; }
 .file .file__label{ font-weight:700; }
@@ -106,8 +131,13 @@ html.dark .file{ color:#000; } /* ook zwart in dark mode bij witte knop */
 .file.selected:hover{ background:var(--ok-dark); border-color:var(--ok-dark); }
 
 /* ---------- onder de forms ---------- */
-.actions{ margin:1rem 0 0; display:flex; justify-content:center; gap:.75rem; flex-wrap:wrap; }
-.actions--bottom .btn{ flex: 0 0 var(--btn-width); } /* vaste breedte, net als bovenste knoppen */
+.actions{
+  margin:1rem 0 0; display:flex; justify-content:center; gap:.75rem; flex-wrap:wrap;
+}
+.actions--bottom .btn{
+  flex: 0 0 var(--btn-width);          /* vaste breedte, gelijk aan de bovenste knoppen */
+  font-size:var(--btn-font);           /* expliciet gelijk houden */
+}
 
 /* helper */
 .visually-hidden{
