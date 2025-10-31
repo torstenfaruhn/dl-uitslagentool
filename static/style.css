@@ -28,7 +28,7 @@ html,body{
   font-family:ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
   color:var(--fg);
   background:var(--bg);
-  text-align:center; /* <<< alles gecentreerd */
+  text-align:center; /* overal gecentreerd */
 }
 
 /* ---------- HERO ---------- */
@@ -70,14 +70,24 @@ html,body{
   margin:0; font-size:var(--subtitle-size); opacity:.96; text-shadow:0 2px 10px rgba(0,0,0,.35);
 }
 
-/* ---------- LAYOUT ---------- */
+/* ---------- LAYOUT (strakkere verticale uitlijning) ---------- */
 .container{
-  max-width:1100px; margin:0 auto; padding:1.5rem; display:grid; gap:1.25rem;
+  max-width:1100px;
+  margin:2rem auto 2.5rem;   /* meer lucht boven/onder de stack */
+  padding:0 1.5rem;          /* geen extra verticale padding */
+  display:grid;
+  gap:0.9rem;                /* kleinere afstand tussen kaarten */
+  justify-items:center;      /* centreer cards in de rij */
 }
 .card{
-  background:var(--card); border:1px solid var(--outline); border-radius:16px;
-  box-shadow:0 10px 30px rgba(12,18,28,.06); padding:1.25rem;
-  text-align:center; /* <<< teksten in de velden gecentreerd */
+  width:100%;
+  max-width:900px;           /* uniforme breedte voor beide kaarten */
+  background:var(--card);
+  border:1px solid var(--outline);
+  border-radius:16px;
+  box-shadow:0 10px 30px rgba(12,18,28,.06);
+  padding:1.25rem;
+  text-align:center;
 }
 .card__head h3{ margin:.15rem 0 .35rem; font-size:1.35rem; }
 .card__head p{ margin:0 0 1.1rem; color:var(--muted); }  /* extra ruimte onder uitleg */
@@ -86,12 +96,11 @@ html,body{
 .btn{
   appearance:none; border:1px solid transparent; background:var(--brand); color:#fff;
   padding:.65rem 1rem; border-radius:12px; font-weight:600; cursor:pointer; transition:.15s ease;
-  display:inline-flex; align-items:center; justify-content:center; /* <<< tekst gecentreerd */
-  text-decoration:none;
+  display:inline-flex; align-items:center; justify-content:center; text-decoration:none;
   min-width:var(--btn-width);
   font-size:var(--btn-font);
   line-height:1.1;
-  text-align:center; /* <<< tekst in de knop gecentreerd */
+  text-align:center;
 }
 .btn:hover{background:var(--brand-dark)}
 .btn:active{transform:translateY(1px)}
@@ -112,7 +121,7 @@ html,body{
   gap:.9rem;
   flex-wrap:wrap;
   align-items:center;
-  justify-content:center;              /* << alle bovenste knoppen centreren */
+  justify-content:center;              /* bovenste knoppen centreren */
 }
 
 /* ---------- 'Bestand kiezen'-knop ---------- */
@@ -123,7 +132,7 @@ html,body{
   min-width:var(--btn-width);
   font-size:var(--btn-font);
   line-height:1.1;
-  text-align:center; /* <<< tekst gecentreerd */
+  text-align:center;
 }
 html.dark .file{ color:#000; }         /* ook zwart in dark mode bij witte knop */
 .file:hover{border-color:var(--brand)}
@@ -142,7 +151,7 @@ html.dark .file{ color:#000; }         /* ook zwart in dark mode bij witte knop 
 .actions--bottom .btn{
   flex: 0 0 var(--btn-width);
   font-size:var(--btn-font);
-  text-align:center; /* <<< tekst gecentreerd */
+  text-align:center;
 }
 
 /* helper */
