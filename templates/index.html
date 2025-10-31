@@ -9,7 +9,7 @@
   <body>
     <!-- HERO met logo linksboven + gecentreerde teksten -->
     <section class="hero">
-      <img src="/static/img/hero.jpg" alt="" />
+      <img src="/static/img/hero.jpg" alt="" class="hero__img" />
       <img src="/static/img/logo.png" alt="DL/MHNL" class="hero__logo" />
       <div class="hero__overlay">
         <h1>Maak snel je CUE-export</h1>
@@ -26,16 +26,16 @@
         </div>
 
         <form action="/convert/amateur" method="post" enctype="multipart/form-data" class="upload">
-          <label class="file">
+          <label class="file" data-filepicker>
             <input type="file" name="file_amateur" accept=".xlsx" required />
             <span class="file__label">Bestand kiezen</span>
-            <span class="file__name" data-file>Geen bestand gekozen</span>
+            <!-- Bestandsnaam NIET tonen, daarom geen extra tekst -->
           </label>
+
           <button type="submit" class="btn btn-primary">Maak CUE export (.txt)</button>
         </form>
 
         <div class="actions actions--bottom">
-          <!-- URL-encoding voor spaties -->
           <a class="btn btn-outline block"
              href="/static/docs/AMA_uitslagen%20amateuvoetbal%202025-2026%20definitief.xlsx"
              download>Download leeg invoerdocument</a>
@@ -50,11 +50,11 @@
         </div>
 
         <form action="/convert/regiosport" method="post" enctype="multipart/form-data" class="upload">
-          <label class="file">
+          <label class="file" data-filepicker>
             <input type="file" name="file_regio" accept=".xlsx" required />
             <span class="file__label">Bestand kiezen</span>
-            <span class="file__name" data-file>Geen bestand gekozen</span>
           </label>
+
           <button type="submit" class="btn btn-primary">Maak CUE export (.txt)</button>
         </form>
 
@@ -69,12 +69,17 @@
     </main>
 
     <script>
-      // Toon bestandsnaam naast 'Bestand kiezen'
-      document.querySelectorAll('input[type="file"]').forEach(input => {
+      // 1) Geen bestandsnaam tonen
+      // 2) Als er een bestand is gekozen: geef de file-knop een 'selected' state (groen)
+      document.querySelectorAll('[data-filepicker] input[type="file"]').forEach(input => {
         input.addEventListener('change', () => {
-          const name = input.files?.[0]?.name || "Geen bestand gekozen";
-          const target = input.closest('.file')?.querySelector('[data-file]');
-          if (target) target.textContent = name;
+          const wrap = input.closest('[data-filepicker]');
+          if (!wrap) return;
+          if (input.files && input.files.length > 0) {
+            wrap.classList.add('selected');
+          } else {
+            wrap.classList.remove('selected');
+          }
         });
       });
     </script>
