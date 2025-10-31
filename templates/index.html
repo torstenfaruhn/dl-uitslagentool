@@ -10,9 +10,7 @@
     <!-- HERO -->
     <section class="hero">
       <img src="/static/img/hero.jpg" alt="" class="hero__img" />
-      <!-- GEcentreerd logo -->
       <img src="/static/img/logo.png" alt="DL/MHNL" class="hero__logo" />
-      <!-- Teksten onderaan, gecentreerd, met gap = font-size onderregel -->
       <div class="hero__overlay">
         <h1>Maak snel je CUE-export</h1>
         <p>Upload een ingevuld Excelbestand of download eerst een leeg sjabloon.</p>
@@ -27,75 +25,5 @@
           <p>Upload het ingevulde Excelbestand (.xlsx). Klik daarna op de knop hieronder. Je krijgt dan een txt-bestand dat je in CUE moet plakken.</p>
         </div>
 
-        <form action="/convert/amateur" method="post" enctype="multipart/form-data" class="upload">
-          <label class="file btn-like" data-filepicker>
-            <input type="file" name="file_amateur" accept=".xlsx" required />
-            <span class="file__label">Bestand kiezen</span>
-          </label>
-
-          <button type="submit" class="btn btn-primary btn-like">Maak CUE export (.txt)</button>
-        </form>
-
-        <div class="actions actions--bottom">
-          <a class="btn btn-outline btn-like block"
-             href="/static/docs/AMA_uitslagen%20amateuvoetbal%202025-2026%20definitief.xlsx"
-             download>Download leeg invoerdocument</a>
-        </div>
-      </section>
-
-      <!-- REGIOSPORT -->
-      <section class="card">
-        <div class="card__head">
-          <h3>Regiosport</h3>
-          <p>Upload het ingevulde Excelbestand (.xlsx). Klik daarna op de knop hieronder. Je krijgt dan een txt-bestand dat je in CUE moet plakken.</p>
-        </div>
-
-        <form action="/convert/regiosport" method="post" enctype="multipart/form-data" class="upload">
-          <label class="file btn-like" data-filepicker>
-            <input type="file" name="file_regio" accept=".xlsx" required />
-            <span class="file__label">Bestand kiezen</span>
-          </label>
-
-          <button type="submit" class="btn btn-primary btn-like">Maak CUE export (.txt)</button>
-        </form>
-
-        <div class="actions actions--bottom">
-          <a class="btn btn-outline btn-like block"
-             href="/static/docs/Uitslagen%20regiosport%20202-2026%20definitief.xlsx"
-             download>Download leeg invoerdocument</a>
-        </div>
-      </section>
-
-      <footer>&copy; DL/MHNL 2025</footer>
-    </main>
-
-    <script>
-      // 1) Geen bestandsnaam tonen; 2) groene state bij gekozen bestand
-      document.querySelectorAll('[data-filepicker] input[type="file"]').forEach(input => {
-        input.addEventListener('change', () => {
-          const wrap = input.closest('[data-filepicker]');
-          if (!wrap) return;
-          wrap.classList.toggle('selected', input.files && input.files.length > 0);
-        });
-      });
-
-      // Donkere modus op tijd: actief vanaf 17:00 Europe/Amsterdam
-      function setTimedTheme(){
-        try{
-          const fmt = new Intl.DateTimeFormat('nl-NL',{
-            hour:'numeric', hour12:false, timeZone:'Europe/Amsterdam'
-          });
-          const parts = fmt.formatToParts(new Date());
-          const hour = parseInt(parts.find(p=>p.type==='hour').value,10);
-          const dark = (hour >= 17); // vanaf 17:00 t/m 23:59
-          document.documentElement.classList.toggle('dark', dark);
-        }catch(e){
-          // fallback: geen toggling
-        }
-      }
-      setTimedTheme();
-      // update elk kwartier
-      setInterval(setTimedTheme, 15*60*1000);
-    </script>
-  </body>
-</html>
+        <form action="/convert/amateur" method="post" enctype="multipart/form-data"
+              class="upload js-convert"
