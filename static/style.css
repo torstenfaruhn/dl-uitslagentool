@@ -1,44 +1,75 @@
+/* Licht thema */
 :root{
   --bg:#f7f8fb; --fg:#0b0d12; --muted:#69707d;
-  --card:#fff; --brand:#1e88e5; --brand-dark:#176fbc; --outline:#d6dbe6; --accent:#2e7d32;
+  --card:#ffffff; --brand:#1e88e5; --brand-dark:#176fbc; --outline:#d6dbe6;
+  --ok:#2e7d32; --ok-dark:#236328;
 }
+
+/* Donkere modus */
+@media (prefers-color-scheme: dark){
+  :root{
+    --bg:#0f131a; --fg:#e9eef8; --muted:#a8b1c2;
+    --card:#151b24; --brand:#5aa9ff; --brand-dark:#4693e6; --outline:#283140;
+    --ok:#3dbb58; --ok-dark:#2f9a47;
+  }
+}
+
 *{box-sizing:border-box}
 html,body{margin:0;padding:0;font-family:ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;color:var(--fg);background:var(--bg)}
 
-.topbar{background:#fff;border-bottom:1px solid var(--outline)}
-.topbar__inner{max-width:1100px;margin:0 auto;display:flex;align-items:center;gap:.75rem;padding:.75rem 1rem}
-.logo{height:36px;width:auto}
-.topbar h1{font-size:1.25rem;margin:0}
+/* HERO */
+.hero{position:relative;max-height:340px;overflow:hidden;border-bottom:1px solid var(--outline)}
+.hero__img{width:100%;height:340px;object-fit:cover;display:block;object-position:80% center;} /* bal naar rechts */
+.hero__logo{
+  position:absolute;left:16px;top:16px;height:52px;width:auto;z-index:3;
+  filter: drop-shadow(0 2px 6px rgba(0,0,0,.35));
+}
+.hero__overlay{
+  position:absolute;inset:0;display:grid;place-items:center;z-index:2;
+  text-align:center;color:#fff;
+  background:linear-gradient(180deg,rgba(0,0,0,.38),rgba(0,0,0,.25) 55%,rgba(0,0,0,.45));
+  padding:0 1rem;
+}
+.hero__overlay h1{margin:0 0 .35rem;font-size:2.15rem;line-height:1.1;text-shadow:0 3px 16px rgba(0,0,0,.35)}
+.hero__overlay p{margin:0;font-size:1.05rem;opacity:.96;text-shadow:0 2px 10px rgba(0,0,0,.35)}
 
-.hero{position:relative;max-height:280px;overflow:hidden;border-bottom:1px solid var(--outline)}
-.hero img{width:100%;height:280px;object-fit:cover;display:block;filter:saturate(1.05) contrast(1.02)}
-.hero__overlay{position:absolute;inset:0;background:linear-gradient(180deg,rgba(0,0,0,.35),rgba(0,0,0,.25) 50%,rgba(0,0,0,.45));color:#fff;display:flex;flex-direction:column;justify-content:flex-end;padding:1.25rem 1rem}
-.hero__overlay h2{margin:0 0 .25rem;font-size:1.6rem}
-.hero__overlay p{margin:0 0 .25rem;opacity:.9}
-
+/* LAYOUT */
 .container{max-width:1100px;margin:0 auto;padding:1.5rem;display:grid;gap:1.25rem}
 .card{background:var(--card);border:1px solid var(--outline);border-radius:16px;box-shadow:0 10px 30px rgba(12,18,28,.06);padding:1.25rem}
-.card__head h3{margin:.25rem 0 .25rem;font-size:1.4rem}
-.card__head p{margin:0;color:var(--muted)}
+.card__head h3{margin:.15rem 0 .35rem;font-size:1.35rem}
+.card__head p{margin:0 0 1.0rem;color:var(--muted)}  /* EXTRA ruimte onder de uitleg */
 
-.actions{margin:.75rem 0 1rem}
-
-.upload{display:flex;gap:.75rem;flex-wrap:wrap;align-items:center}
-
+/* KNOPPEN */
 .btn{appearance:none;border:1px solid transparent;background:var(--brand);color:#fff;padding:.65rem 1rem;border-radius:12px;font-weight:600;cursor:pointer;transition:.15s ease;display:inline-flex;align-items:center;gap:.5rem;text-decoration:none}
-.btn:hover{background:var(--brand-dark);filter:none}
+.btn:hover{background:var(--brand-dark)}
 .btn:active{transform:translateY(1px)}
-.btn-outline{background:#fff;border-color:var(--outline);color:var(--fg)}
-.btn-outline:hover{border-color:var(--brand);color:var(--brand);background:#f0f7ff}
-.btn-primary{background:var(--brand)}
-.btn-primary:hover{background:var(--brand-dark)}
-.btn-success{background:var(--accent)}
-.btn-success:hover{filter:brightness(.95)}
+.btn-outline{background:transparent;border-color:var(--outline);color:var(--fg)}
+.btn-outline:hover{border-color:var(--brand);color:var(--brand);background:rgba(30,136,229,.08)}
+.block{display:block;width:100%;text-align:center}
 
-.file{display:flex;align-items:center;gap:.6rem;border:1px dashed var(--outline);border-radius:12px;padding:.5rem .75rem;background:#fff}
+/* UPLOAD */
+.upload{display:flex;gap:.9rem;flex-wrap:wrap;align-items:center}
+
+/* 'Bestand kiezen' als knop */
+.file{
+  position:relative; display:inline-flex; align-items:center; gap:.6rem;
+  border:1px solid var(--outline); border-radius:12px; padding:.6rem 1rem;
+  background:#fff; cursor:pointer; transition:.15s ease;
+}
+.file:hover{border-color:var(--brand)}
 .file input[type=file]{position:absolute;inset:0;opacity:0;cursor:pointer}
-.file{position:relative}
-.file__label{font-weight:600}
-.file__name{color:var(--muted)}
+.file .file__label{font-weight:700; color:var(--fg)}
+/* Geen bestandsnaam tonen → we hebben geen file__name span meer */
+
+/* Groen worden zodra er een bestand is gekozen */
+.file.selected{
+  background:var(--ok); border-color:var(--ok); color:#fff;
+}
+.file.selected .file__label{color:#fff}
+.file.selected:hover{background:var(--ok-dark); border-color:var(--ok-dark)}
+
+/* Downloadknop onder de form */
+.actions{margin:1rem 0 0}
+.actions--bottom{margin-top:.9rem}
 
 footer{margin-top:.25rem;color:var(--muted);text-align:center;font-size:.9rem}
