@@ -1,4 +1,3 @@
-
 <!doctype html>
 <html lang="nl">
   <head>
@@ -8,32 +7,78 @@
     <link rel="stylesheet" href="/static/style.css" />
   </head>
   <body>
+    <!-- Topbar met logo -->
+    <header class="topbar">
+      <div class="topbar__inner">
+        <img src="/static/img/logo.png" alt="DL/MHNL" class="logo" />
+        <h1>DL sporttools</h1>
+      </div>
+    </header>
+
+    <!-- Hero/banner -->
+    <section class="hero">
+      <img src="/static/img/hero.jpg" alt="" />
+      <div class="hero__overlay">
+        <h2>Maak snel je CUE-export</h2>
+        <p>Upload een ingevuld Excelbestand of download eerst een leeg sjabloon.</p>
+      </div>
+    </section>
+
     <main class="container">
+      <!-- AMATEUR -->
       <section class="card">
-        <h1>DL amateurvoetbal tool</h1>
-        <p>Upload het ingevulde Excelbestand (.xlsx). Klik daarna op de knop hieronder. Je krijgt dan een txt‑bestand dat je in CUE moet plakken.</p>
+        <div class="card__head">
+          <h3>DL amateurvoetbal tool</h3>
+          <p>Upload het ingevulde Excelbestand (.xlsx). Klik daarna op de knop hieronder. Je krijgt dan een txt-bestand dat je in CUE moet plakken.</p>
+        </div>
+
+        <div class="actions">
+          <a class="btn btn-outline" href="/template/amateur">Download leeg invoerdocument</a>
+        </div>
+
         <form action="/convert/amateur" method="post" enctype="multipart/form-data" class="upload">
           <label class="file">
             <input type="file" name="file_amateur" accept=".xlsx" required />
-            <span>Bestand kiezen</span>
+            <span class="file__label">Bestand kiezen</span>
+            <span class="file__name" data-file>Geen bestand gekozen</span>
           </label>
-          <button type="submit" class="secondary">Maak CUE export (.txt)</button>
+          <button type="submit" class="btn btn-primary">Maak CUE export (.txt)</button>
         </form>
       </section>
 
+      <!-- REGIOSPORT -->
       <section class="card">
-        <h1>DL regiosport tool</h1>
-        <p>Upload het ingevulde Excelbestand (.xlsx). Klik daarna op de knop hieronder. Je krijgt dan een txt‑bestand dat je in CUE moet plakken.</p>
+        <div class="card__head">
+          <h3>DL regiosport tool</h3>
+          <p>Upload het ingevulde Excelbestand (.xlsx). Klik daarna op de knop hieronder. Je krijgt dan een txt-bestand dat je in CUE moet plakken.</p>
+        </div>
+
+        <div class="actions">
+          <a class="btn btn-outline" href="/template/regiosport">Download leeg invoerdocument</a>
+        </div>
+
         <form action="/convert/regiosport" method="post" enctype="multipart/form-data" class="upload">
           <label class="file">
             <input type="file" name="file_regio" accept=".xlsx" required />
-            <span>Kies bestand</span>
+            <span class="file__label">Bestand kiezen</span>
+            <span class="file__name" data-file>Geen bestand gekozen</span>
           </label>
-          <button type="submit">Maak CUE export (.txt)</button>
+          <button type="submit" class="btn btn-primary">Maak CUE export (.txt)</button>
         </form>
       </section>
 
       <footer>&copy; DL/MHNL 2025</footer>
     </main>
+
+    <script>
+      // Toon bestandsnaam naast 'Bestand kiezen'
+      document.querySelectorAll('input[type="file"]').forEach(input => {
+        input.addEventListener('change', e => {
+          const name = input.files?.[0]?.name || "Geen bestand gekozen";
+          const target = input.closest('.file').querySelector('[data-file]');
+          if (target) target.textContent = name;
+        });
+      });
+    </script>
   </body>
 </html>
