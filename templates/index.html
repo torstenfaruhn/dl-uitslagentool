@@ -1,0 +1,39 @@
+
+<!doctype html>
+<html lang="nl">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>DL sporttools</title>
+    <link rel="stylesheet" href="/static/style.css" />
+  </head>
+  <body>
+    <main class="container">
+      <section class="card">
+        <h1>DL amateurvoetbal tool</h1>
+        <p>Upload het ingevulde Excelbestand (.xlsx). Klik daarna op de knop hieronder. Je krijgt dan een txt‑bestand dat je in CUE moet plakken.</p>
+        <form action="/convert/amateur" method="post" enctype="multipart/form-data" class="upload">
+          <label class="file">
+            <input type="file" name="file_amateur" accept=".xlsx" required />
+            <span>Bestand kiezen</span>
+          </label>
+          <button type="submit" class="secondary">Maak CUE export (.txt)</button>
+        </form>
+      </section>
+
+      <section class="card">
+        <h1>DL regiosport tool</h1>
+        <p>Upload het ingevulde Excelbestand (.xlsx). Klik daarna op de knop hieronder. Je krijgt dan een txt‑bestand dat je in CUE moet plakken.</p>
+        <form action="/convert/regiosport" method="post" enctype="multipart/form-data" class="upload">
+          <label class="file">
+            <input type="file" name="file_regio" accept=".xlsx" required />
+            <span>Kies bestand</span>
+          </label>
+          <button type="submit">Maak CUE export (.txt)</button>
+        </form>
+      </section>
+
+      <footer>&copy; DL/MHNL 2025</footer>
+    </main>
+  </body>
+</html>
