@@ -181,8 +181,20 @@ html.dark .file{
 }
 
 /* ---------- Downloadknop onder form ---------- */
-.actions{margin:1rem 0 0}
-.actions--bottom{margin-top:.9rem}
+.actions{
+  margin:1rem 0 0;
+  display:flex;
+  justify-content:center; /* centreren */
+}
+.actions--bottom{
+  margin-top:.9rem;
+}
+.actions--bottom .btn{
+  width:100%;
+  max-width:calc(var(--btn-width) * 2 + 20px); /* max even breed als twee knoppen erboven */
+  text-align:center;
+}
+
 .block{
   display:block;
   width:100%;
