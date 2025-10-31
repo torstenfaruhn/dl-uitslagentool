@@ -28,6 +28,7 @@ html,body{
   font-family:ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
   color:var(--fg);
   background:var(--bg);
+  text-align:center; /* <<< alles gecentreerd */
 }
 
 /* ---------- HERO ---------- */
@@ -76,6 +77,7 @@ html,body{
 .card{
   background:var(--card); border:1px solid var(--outline); border-radius:16px;
   box-shadow:0 10px 30px rgba(12,18,28,.06); padding:1.25rem;
+  text-align:center; /* <<< teksten in de velden gecentreerd */
 }
 .card__head h3{ margin:.15rem 0 .35rem; font-size:1.35rem; }
 .card__head p{ margin:0 0 1.1rem; color:var(--muted); }  /* extra ruimte onder uitleg */
@@ -84,10 +86,12 @@ html,body{
 .btn{
   appearance:none; border:1px solid transparent; background:var(--brand); color:#fff;
   padding:.65rem 1rem; border-radius:12px; font-weight:600; cursor:pointer; transition:.15s ease;
-  display:inline-flex; align-items:center; gap:.5rem; text-decoration:none; justify-content:center;
+  display:inline-flex; align-items:center; justify-content:center; /* <<< tekst gecentreerd */
+  text-decoration:none;
   min-width:var(--btn-width);
-  font-size:var(--btn-font);            /* uniforme tekstgrootte */
+  font-size:var(--btn-font);
   line-height:1.1;
+  text-align:center; /* <<< tekst in de knop gecentreerd */
 }
 .btn:hover{background:var(--brand-dark)}
 .btn:active{transform:translateY(1px)}
@@ -113,12 +117,13 @@ html,body{
 
 /* ---------- 'Bestand kiezen'-knop ---------- */
 .file{
-  position:relative; display:inline-flex; align-items:center; gap:.6rem;
+  position:relative; display:inline-flex; align-items:center; justify-content:center; gap:.6rem;
   border:1px solid var(--outline); border-radius:12px; padding:.6rem 1rem;
   background:#fff; cursor:pointer; transition:.15s ease; color:#000; /* zwart bij wit */
   min-width:var(--btn-width);
-  font-size:var(--btn-font);            /* zelfde tekstgrootte als andere knoppen */
+  font-size:var(--btn-font);
   line-height:1.1;
+  text-align:center; /* <<< tekst gecentreerd */
 }
 html.dark .file{ color:#000; }         /* ook zwart in dark mode bij witte knop */
 .file:hover{border-color:var(--brand)}
@@ -135,8 +140,9 @@ html.dark .file{ color:#000; }         /* ook zwart in dark mode bij witte knop 
   margin:1rem 0 0; display:flex; justify-content:center; gap:.75rem; flex-wrap:wrap;
 }
 .actions--bottom .btn{
-  flex: 0 0 var(--btn-width);          /* vaste breedte, gelijk aan de bovenste knoppen */
-  font-size:var(--btn-font);           /* expliciet gelijk houden */
+  flex: 0 0 var(--btn-width);
+  font-size:var(--btn-font);
+  text-align:center; /* <<< tekst gecentreerd */
 }
 
 /* helper */
