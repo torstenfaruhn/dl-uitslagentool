@@ -16,66 +16,182 @@ html.dark{
 }
 
 *{box-sizing:border-box}
-html,body{margin:0;padding:0;font-family:ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;color:var(--fg);background:var(--bg)}
+html,body{
+  margin:0;
+  padding:0;
+  font-family:ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
+  color:var(--fg);
+  background:var(--bg);
+}
 
 /* ---------- HERO ---------- */
-.hero{position:relative;max-height:340px;overflow:hidden;border-bottom:1px solid var(--outline)}
+.hero{
+  position:relative;
+  max-height:340px;
+  overflow:hidden;
+  border-bottom:1px solid var(--outline);
+}
 .hero__img{
-  width:100%;height:340px;object-fit:cover;display:block;
-  object-position: 80% center; /* bal naar rechts */
+  width:100%;
+  height:340px;
+  object-fit:cover;
+  display:block;
+  object-position:80% center; /* bal naar rechts */
 }
 .hero__logo{
-  position:absolute;left:50%;top:var(--hero-pad);transform:translateX(-50%); /* gecentreerd */
-  height:56px;width:auto;z-index:3;filter: drop-shadow(0 2px 6px rgba(0,0,0,.35));
+  position:absolute;
+  left:50%;
+  top:var(--hero-pad);
+  transform:translateX(-50%);
+  height:56px;
+  width:auto;
+  z-index:3;
+  filter: drop-shadow(0 2px 6px rgba(0,0,0,.35));
 }
 .hero__overlay{
-  position:absolute;left:0;right:0;bottom:var(--hero-pad); /* zelfde marge als logo-top */
-  display:flex;flex-direction:column;align-items:center;justify-content:flex-end;
-  text-align:center;color:#fff;z-index:2;padding:0 1rem;
+  position:absolute;
+  left:0;
+  right:0;
+  bottom:var(--hero-pad); /* zelfde marge als logo-top */
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:flex-end;
+  text-align:center;
+  color:#fff;
+  z-index:2;
+  padding:0 1rem;
   background:linear-gradient(180deg,rgba(0,0,0,.38),rgba(0,0,0,.25) 55%,rgba(0,0,0,.45));
   gap: var(--subtitle-size); /* afstand = fontgrootte onderregel */
 }
 .hero__overlay h1{
-  margin:0;font-size:2.15rem;line-height:1.1;text-shadow:0 3px 16px rgba(0,0,0,.35)
+  margin:0;
+  font-size:2.15rem;
+  line-height:1.1;
+  text-shadow:0 3px 16px rgba(0,0,0,.35);
 }
 .hero__overlay p{
-  margin:0;font-size:var(--subtitle-size);opacity:.96;text-shadow:0 2px 10px rgba(0,0,0,.35)
+  margin:0;
+  font-size:var(--subtitle-size);
+  opacity:.96;
+  text-shadow:0 2px 10px rgba(0,0,0,.35);
 }
 
 /* ---------- LAYOUT ---------- */
-.container{max-width:1100px;margin:0 auto;padding:1.5rem;display:grid;gap:1.25rem}
-.card{background:var(--card);border:1px solid var(--outline);border-radius:16px;box-shadow:0 10px 30px rgba(12,18,28,.06);padding:1.25rem}
-.card__head h3{margin:.15rem 0 .35rem;font-size:1.35rem}
-.card__head p{margin:0 0 1.1rem;color:var(--muted)}  /* extra ruimte onder uitleg */
+.container{
+  max-width:1100px;
+  margin:0 auto;
+  padding:1.5rem;
+  display:grid;
+  gap:1.25rem;
+}
+.card{
+  background:var(--card);
+  border:1px solid var(--outline);
+  border-radius:16px;
+  box-shadow:0 10px 30px rgba(12,18,28,.06);
+  padding:1.25rem;
+}
+.card__head h3{
+  margin:.15rem 0 .35rem;
+  font-size:1.35rem;
+}
+.card__head p{
+  margin:0 0 1.1rem;
+  color:var(--muted);
+}  /* extra ruimte onder uitleg */
 
 /* ---------- KNOPPEN ---------- */
-.btn{appearance:none;border:1px solid transparent;background:var(--brand);color:#fff;padding:.65rem 1rem;border-radius:12px;font-weight:600;cursor:pointer;transition:.15s ease;display:inline-flex;align-items:center;gap:.5rem;text-decoration:none;justify-content:center}
+.btn{
+  appearance:none;
+  border:1px solid transparent;
+  background:var(--brand);
+  color:#fff;
+  padding:.65rem 1rem;
+  border-radius:12px;
+  font-weight:600;
+  cursor:pointer;
+  transition:.15s ease;
+  display:inline-flex;
+  align-items:center;
+  gap:.5rem;
+  text-decoration:none;
+  justify-content:center;
+}
 .btn:hover{background:var(--brand-dark)}
 .btn:active{transform:translateY(1px)}
-.btn-outline{background:transparent;border-color:var(--outline);color:var(--fg)}
-.btn-outline:hover{border-color:var(--brand);color:var(--brand);background:rgba(30,136,229,.08)}
+.btn-outline{
+  background:transparent;
+  border-color:var(--outline);
+  color:var(--fg);
+}
+.btn-outline:hover{
+  border-color:var(--brand);
+  color:var(--brand);
+  background:rgba(30,136,229,.08);
+}
 .btn-like{min-width: var(--btn-width);}  /* gelijke (min)breedte */
 
 /* ---------- UPLOAD ---------- */
-.upload{display:flex;gap:.9rem;flex-wrap:wrap;align-items:center}
+.upload{
+  display:flex;
+  gap:.9rem;
+  flex-wrap:wrap;
+  align-items:center;
+}
 
-/* 'Bestand kiezen' → knop die groen wordt bij keuze */
+/* ---------- 'Bestand kiezen'-knop ---------- */
 .file{
-  position:relative; display:inline-flex; align-items:center; gap:.6rem;
-  border:1px solid var(--outline); border-radius:12px; padding:.6rem 1rem;
-  background:#fff; cursor:pointer; transition:.15s ease; color:var(--fg);
+  position:relative;
+  display:inline-flex;
+  align-items:center;
+  gap:.6rem;
+  border:1px solid var(--outline);
+  border-radius:12px;
+  padding:.6rem 1rem;
+  background:#fff;
+  cursor:pointer;
+  transition:.15s ease;
+  color:#000; /* zwart bij witte knop */
+}
+html.dark .file{
+  color:#000; /* ook zwart in donkere modus bij witte knop */
 }
 .file:hover{border-color:var(--brand)}
-.file input[type=file]{position:absolute;inset:0;opacity:0;cursor:pointer}
-.file .file__label{font-weight:700}
-/* groene state */
-.file.selected{background:var(--ok); border-color:var(--ok); color:#fff;}
-.file.selected .file__label{color:#fff}
-.file.selected:hover{background:var(--ok-dark); border-color:var(--ok-dark)}
+.file input[type=file]{
+  position:absolute;
+  inset:0;
+  opacity:0;
+  cursor:pointer;
+}
+.file .file__label{
+  font-weight:700;
+}
 
-/* Downloadknop onder form */
+/* ---------- groene state bij gekozen bestand ---------- */
+.file.selected{
+  background:var(--ok);
+  border-color:var(--ok);
+  color:#fff;
+}
+.file.selected .file__label{color:#fff}
+.file.selected:hover{
+  background:var(--ok-dark);
+  border-color:var(--ok-dark);
+}
+
+/* ---------- Downloadknop onder form ---------- */
 .actions{margin:1rem 0 0}
 .actions--bottom{margin-top:.9rem}
-.block{display:block;width:100%;text-align:center}
+.block{
+  display:block;
+  width:100%;
+  text-align:center;
+}
 
-footer{margin-top:.25rem;color:var(--muted);text-align:center;font-size:.9rem}
+footer{
+  margin-top:.25rem;
+  color:var(--muted);
+  text-align:center;
+  font-size:.9rem;
+}
