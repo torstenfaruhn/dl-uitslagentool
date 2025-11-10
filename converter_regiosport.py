@@ -120,7 +120,8 @@ def render_table_block(block):
 # --- Uitzonderingsregel: uitslag 'n.n.b.' ---
         if hs.lower() == "n.n.b." or ascr.lower() == "n.n.b.":
             lines += [
-                f'<TFIELD colspan="4" align="right">{home} - {away} n.n.b.</TFIELD>'
+                "<TFIELD>", f"{home} - {away}", "</TFIELD>",
+                "<TFIELD colspan='3' align='right'>n.n.b.</TFIELD>"
             ]
         else:
             lines += [
