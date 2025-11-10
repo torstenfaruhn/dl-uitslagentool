@@ -116,16 +116,26 @@ def render_table_block(block):
         if idx == n - 1: attrs.append('bottomgutter="1.5816m"')
         attr_str = f" {' '.join(attrs)}" if attrs else ""
         lines.append(f"<TROW{attr_str}>")
-        lines += ["<TFIELD>", f"{home} - {away}", "</TFIELD>",
-                  "<TFIELD>", f"{hs}", "</TFIELD>",
-                  "<TFIELD>", "-", "</TFIELD>",
-                  "<TFIELD>", f"{ascr}", "</TFIELD>",
-                  "</TROW>"]
+        
+# --- Uitzonderingsregel: uitslag 'n.n.b.' ---
+        if hs.lower() == "n.n.b." or ascr.lower() == "n.n.b.":
+            lines += [
+                f'<TFIELD colspan="4" align="right">{home} - {away} n.n.b.</TFIELD>'
+            ]
+        else:
+            lines += [
+                "<TFIELD>", f"{home} - {away}", "</TFIELD>",
+                "<TFIELD>", f"{hs}", "</TFIELD>",
+                "<TFIELD>", "-", "</TFIELD>",
+                "<TFIELD>", f"{ascr}", "</TFIELD>"
+            ]
+        lines.append("</TROW>")
     lines.append("</TBODY>")
     lines.append("</TABLE>")
     if block.get("stand"):
         lines.append(f"<howto_facts>{block['stand']}</howto_facts><EP>")
     return lines
+
 
 
 def to_render_blocks(sheet1_df, sheet2_df):
