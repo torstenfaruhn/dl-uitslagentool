@@ -125,7 +125,7 @@ def render_table_block(block):
         if uitzonderings_tekst is not None:
             lines += [
                 "<TFIELD>", f"{home} - {away}", "</TFIELD>",
-                f"<TFIELD colspan='3' align='right'>{uitzonderings_tekst}</TFIELD>"
+                "<TFIELD colspan='3' align='right'>{uitzonderings_tekst}</TFIELD>"
             ]
         else:
             lines += [
