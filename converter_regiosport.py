@@ -96,7 +96,7 @@ def render_table_block(block):
         attr_str = f" {' '.join(attrs)}" if attrs else ""
         lines.append(f"<TROW{attr_str}>")
 
-# --- Uitzonderingsregel: uitslag 'n.n.b.', 'afgelast' of 'gestaakt' ---
+        # --- Uitzonderingsregel: uitslag 'n.n.b.', 'afgelast' of 'gestaakt' ---
         hs_norm = hs.strip().lower()
         ascr_norm = ascr.strip().lower()
         speciale_terms = ("n.n.b.", "afgelast", "gestaakt")
@@ -173,8 +173,7 @@ def excel_to_txt_regiosport(file_bytes: bytes) -> str:
     for bl in blocks:
         lines += bl["render_lines"]
     lines.append("</body>")
-    output_text = "
-".join(lines)
+    output_text = "\n".join(lines)
 
     # Nabehandeling: <howto_facts> gevolgd door <subhead> krijgt EP,1
     output_text = re.sub(r'</howto_facts><EP>\s*<subhead>', r'</howto_facts><EP,1>\n<subhead>', output_text)
