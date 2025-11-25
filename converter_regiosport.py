@@ -14,114 +14,118 @@ def _nl_sort_key(sport: str):
     if not s:
         return (True, "~")
     s_norm = _strip_accents(s).lower()
-    if s_norm.startswith("ij"):
-        s_norm = "y" + s_norm[2:]
+    if s_norm.startswith("voetbal"):
+        return (False, "00_" + s_norm)
     return (False, s_norm)
 
 
-def convert_sheet1_blocks(df):
-    """Parse 'Sporten met uitslagregel' naar blokken met keys: sport, render_lines(list).
-       Neemt dynamisch alle 'UITSLAGREGEL N' mee (N = 1..∞)."""
-    label_col = df.columns[0]
-    value_col = df.columns[1]
+def iter_sheet2_blocks(sheet2_df):
+    current = {
+        "sport": None,
+        "evenement": None,
+        "rows": []
+    }
+    for _, row in sheet2_df.iterrows():
+        sport = (row["sport"] or "").strip()
+        evenement = (row["evenement"] or "").strip()
+        if sport or evenement:
+            if current["sport"] or current["evenement"] or current["rows"]:
+                yield current
+            current = {
+                "sport": sport,
+                "evenement": evenement,
+                "rows": []
+            }
+            continue
+
+        home, away = row["thuisclub"], row["uitclub"]
+        uitslag = row["uitslag"]
+        stand = row["stand"]
+        if not home and not away:
+            continue
+        m = re.match(r"^\s*(\S+)\s*[-–]\s*(\S+)\s*$", uitslag or "")
+        if m:
+            hs, ascr = m.group(1), m.group(2)
+        else:
+            hs = uitslag or ""
+            ascr = ""
+
+        current["rows"].append((home, away, hs, ascr, stand))
+
+    if current["sport"] or current["evenement"] or current["rows"]:
+        yield current
+
+
+def convert_sheet1_blocks(sheet1_df):
     blocks = []
-    current = {"SPORT": None, "EVENEMENT": None, "UITSLAGREGELS": []}
-    uireg = re.compile(r"^UITSLAGREGEL\s*(\d+)$", re.IGNORECASE)
-
-    def flush():
-        nonlocal current
-        if current["SPORT"] or current["EVENEMENT"] or current["UITSLAGREGELS"]:
-            lines = []
-            if current.get("SPORT"):
-                lines.append(f"<subhead_lead>{current['SPORT']}</subhead_lead><EP>")
-            if current.get("EVENEMENT"):
-                lines.append(f"<subhead>{current['EVENEMENT']}</subhead><EP>")
-            for txt in current["UITSLAGREGELS"]:
-                if txt:
-                    lines.append(f"<howto_facts>{txt}</howto_facts><EP>")
-            blocks.append({"sport": (current.get("SPORT") or "").strip(), "render_lines": lines})
-        current = {"SPORT": None, "EVENEMENT": None, "UITSLAGREGELS": []}
-
-    for _, row in df.iterrows():
-        label = (str(row.get(label_col)).strip() if pd.notna(row.get(label_col)) else "")
-        value = (str(row.get(value_col)).strip() if pd.notna(row.get(value_col)) else "")
-
-        if not label and not value:
-            flush(); continue
-        if label.upper().startswith("INVOERVELD"):
-            flush(); continue
-
-        lab_up = label.upper()
-        if lab_up == "SPORT":
-            if value: current["SPORT"] = value
-        elif lab_up == "EVENEMENT":
-            if value: current["EVENEMENT"] = value
-        elif uireg.match(lab_up):
-            if value: current["UITSLAGREGELS"].append(value)
-    flush()
+    for _, row in sheet1_df.iterrows():
+        sport = (row["sport"] or "").strip()
+        evenement = (row["evenement"] or "").strip()
+        uitslag = (row["uitslag"] or "").strip()
+        if not sport and not evenement and not uitslag:
+            continue
+        blocks.append({"sport": sport, "render_lines": [f"<subtitle>{uitslag}</subtitle>"]})
     return blocks
 
 
-def iter_sheet2_blocks(df):
-    """Yield blokken uit 'Sporten met stand' met: sport, evenement, rows, stand."""
-    cols = list(df.columns)
-    a, b, c, d, e = cols[0], cols[1], cols[2], cols[3], cols[4]
-    i, n = 0, len(df)
-    while i < n:
-        label = str(df.at[i, a]).strip() if pd.notna(df.at[i, a]) else ""
-        if label == "SPORT":
-            sport = str(df.at[i, b]).strip() if pd.notna(df.at[i, b]) else ""
-            i += 1
-            evenement = ""
-            if i < n and str(df.at[i, a]).strip() == "EVENEMENT":
-                evenement = str(df.at[i, b]).strip() if pd.notna(df.at[i, b]) else ""
-                i += 1
-            # Header overslaan
-            if i < n and pd.isna(df.at[i, a]) and all(pd.notna(df.at[i, col]) for col in [b, c, d, e]):
-                i += 1
-            rows = []
-            stand_text = ""
-            while i < n:
-                lab = str(df.at[i, a]).strip() if pd.notna(df.at[i, a]) else ""
-                if lab == "STAND":
-                    stand_text = str(df.at[i, b]).strip() if pd.notna(df.at[i, b]) else ""
-                    i += 1
-                    break
-                if lab.startswith("INVOERVELD") or lab == "SPORT":
-                    break
-                home = str(df.at[i, b]).strip() if pd.notna(df.at[i, b]) else ""
-                hs   = str(df.at[i, c]).strip() if pd.notna(df.at[i, c]) else ""
-                away = str(df.at[i, d]).strip() if pd.notna(df.at[i, d]) else ""
-                ascr = str(df.at[i, e]).strip() if pd.notna(df.at[i, e]) else ""
-                if any([home, hs, away, ascr]):
-                    rows.append((home, hs, away, ascr))
-                i += 1
-            yield {"sport": sport, "evenement": evenement, "rows": rows, "stand": stand_text}
-        else:
-            i += 1
+def suppress_redundant_sportheads(blocks):
+    last_sport = None
+    out = []
+    for bl in blocks:
+        sport = bl["sport"]
+        if last_sport and sport and sport == last_sport:
+            new_lines = []
+            it = iter(bl["render_lines"])
+            for line in it:
+                if line.startswith("<sporthead>"):
+                    next(it, None)
+                    continue
+                new_lines.append(line)
+            bl = {**bl, "render_lines": new_lines}
+        out.append(bl)
+        if sport:
+            last_sport = sport
+    return out
 
 
 def render_table_block(block):
+    sport = block["sport"]
+    evenement = block["evenement"]
+    rows = block["rows"]
+
     lines = []
-    lines.append(f"<subhead_lead>{block['sport']}</subhead_lead><EP>")
-    lines.append(f"<subhead>{block['evenement']}</subhead><EP>")
-    lines.append('<TABLE cciformat="1,0" cols="4" dispwidth="30m" topgutter="0.5272m" bottomgutter="0.5272m" break="norule">')
-    lines.extend(['<TCOL width="40m">','</TCOL>','<TCOL width="4m">','</TCOL>','<TCOL width="2m" align="center">','</TCOL>',
-                  '<TCOL width="4m" align="right" raster="uniform" color="3,2" pagespot="0" pattern="0" tint="100" angle="0" frequency="0">','</TCOL>'])
-    lines.append('<TBODY>')
-    n = len(block["rows"])
-    for idx, (home, hs, away, ascr) in enumerate(block["rows"]):
+    if sport:
+        lines.append(f"<sporthead>{sport}</sporthead>")
+    if evenement:
+        lines.append(f"<subhead>{evenement}</subhead>")
+        lines.append("<EP>")
+
+    lines.append("<TABLE>")
+    lines.append("<TBODY>")
+
+    n = len(rows)
+    for idx, (home, away, hs, ascr, stand) in enumerate(rows):
         attrs = []
-        if idx == 0:     attrs.append('topgutter="1.5816m"')
-        if idx == n - 1: attrs.append('bottomgutter="1.5816m"')
+        if idx == 0:
+            attrs.append('topgutter="1.5816m"')
+        if idx == n - 1:
+            attrs.append('bottomgutter="1.5816m"')
         attr_str = f" {' '.join(attrs)}" if attrs else ""
         lines.append(f"<TROW{attr_str}>")
-        
-# --- Uitzonderingsregel: uitslag 'n.n.b.' ---
-        if hs.lower() == "n.n.b." or ascr.lower() == "n.n.b.":
+
+        # --- Uitzonderingsregel: uitslag 'n.n.b.', 'afgelast', 'gestaakt' ---
+        hs_norm = hs.strip().lower()
+        ascr_norm = ascr.strip().lower()
+        speciale_terms = ("n.n.b.", "afgelast", "gestaakt")
+        uitzonderings_tekst = next(
+            (term for term in speciale_terms if term in hs_norm or term in ascr_norm),
+            None
+        )
+
+        if uitzonderings_tekst is not None:
             lines += [
                 "<TFIELD>", f"{home} - {away}", "</TFIELD>",
-                "<TFIELD colspan='3' align='right'>n.n.b.</TFIELD>"
+                f"<TFIELD colspan='3' align='right'>{uitzonderings_tekst}</TFIELD>"
             ]
         else:
             lines += [
@@ -130,13 +134,16 @@ def render_table_block(block):
                 "<TFIELD>", "-", "</TFIELD>",
                 "<TFIELD>", f"{ascr}", "</TFIELD>"
             ]
+
         lines.append("</TROW>")
+
     lines.append("</TBODY>")
     lines.append("</TABLE>")
+
     if block.get("stand"):
         lines.append(f"<howto_facts>{block['stand']}</howto_facts><EP>")
-    return lines
 
+    return lines
 
 
 def to_render_blocks(sheet1_df, sheet2_df):
@@ -150,30 +157,11 @@ def to_render_blocks(sheet1_df, sheet2_df):
     return sorted(all_blocks, key=lambda bl: _nl_sort_key(bl.get("sport")))
 
 
-def suppress_redundant_sportheads(blocks):
-    out = []
-    last_sport_norm = None
-    for bl in blocks:
-        sport_norm = _strip_accents((bl.get("sport") or "").strip()).lower()
-        if sport_norm.startswith("ij"):
-            sport_norm = "y" + sport_norm[2:]
-        lines = list(bl["render_lines"])
-        if last_sport_norm is not None and sport_norm == last_sport_norm:
-            if lines and lines[0].startswith("<subhead_lead>"):
-                lines = lines[1:]
-        else:
-            last_sport_norm = sport_norm
-        out.append({"sport": bl.get("sport",""), "render_lines": lines})
-    return out
+def convert(sheet1_bytes, sheet2_bytes):
+    sheet1_df = pd.read_excel(io.BytesIO(sheet1_bytes), dtype=str).fillna("")
+    sheet2_df = pd.read_excel(io.BytesIO(sheet2_bytes), dtype=str).fillna("")
 
-
-def excel_to_txt_regiosport(file_bytes: bytes) -> str:
-    buf = io.BytesIO(file_bytes)
-    xls = pd.ExcelFile(buf, engine="openpyxl")
-    sheet1 = pd.read_excel(xls, sheet_name=0, dtype=str)
-    sheet2 = pd.read_excel(xls, sheet_name=1, dtype=str)
-
-    blocks = to_render_blocks(sheet1, sheet2)
+    blocks = to_render_blocks(sheet1_df, sheet2_df)
     blocks = suppress_redundant_sportheads(blocks)
 
     lines = ["<body>"]
@@ -182,7 +170,10 @@ def excel_to_txt_regiosport(file_bytes: bytes) -> str:
     lines.append("</body>")
     output_text = "\n".join(lines)
 
-    # Nabehandeling: <howto_facts> gevolgd door <subhead> krijgt EP,1
-    output_text = re.sub(r'</howto_facts><EP>\s*<subhead>', r'</howto_facts><EP,1>\n<subhead>', output_text)
+    output_text = re.sub(
+        r'</howto_facts><EP>\s*<subhead>',
+        r'</howto_facts><EP,1>\n<subhead>',
+        output_text
+    )
 
     return output_text
