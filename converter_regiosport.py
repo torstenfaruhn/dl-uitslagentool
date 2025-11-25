@@ -1,4 +1,3 @@
-# converter_regiosport.py — server-veilige versie
 import io
 import re
 import unicodedata
@@ -117,11 +116,14 @@ def render_table_block(block):
         attr_str = f" {' '.join(attrs)}" if attrs else ""
         lines.append(f"<TROW{attr_str}>")
         
-# --- Uitzonderingsregel: uitslag 'n.n.b.' ---
-        if hs.lower() == "n.n.b." or ascr.lower() == "n.n.b.":
+# --- Uitzonderingsregel: uitslagen 'n.n.b.', 'afgelast', 'gestaakt' ---
+        special_vals = {"n.n.b.", "afgelast", "gestaakt"}
+        if hs.lower() in special_vals or ascr.lower() in special_vals:
+            # Neem de ingevulde speciale waarde over (behoud oorspronkelijke schrijfwijze)
+            special = hs if hs.lower() in special_vals else ascr
             lines += [
                 "<TFIELD>", f"{home} - {away}", "</TFIELD>",
-                "<TFIELD colspan='3' align='right'>n.n.b.</TFIELD>"
+                f"<TFIELD colspan='3' align='right'>{special}</TFIELD>"
             ]
         else:
             lines += [
